@@ -41,4 +41,8 @@ public class Loan {
 
     @Column(name = "status", nullable = false)
     private String status; // ACTIVE, CLOSED, etc.
+
+    public String getId() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

@@ -25,4 +25,8 @@ public class Account {
     public double getBalance() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
+    public void setBalance(double d) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }
