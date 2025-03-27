@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class LoanService {
@@ -13,17 +14,14 @@ public class LoanService {
     @Autowired
     private LoanRepository loanRepository;
 
-    // Save loan details
-    public Loan saveLoan(Loan loan) {
-        return loanRepository.save(loan);
-    }
-
+    // Apply for a loan
     public String applyLoan(Loan loan) {
-        return "Loan application successful for loan ID: " + loan.getId();
+        Loan savedLoan = loanRepository.save(loan);
+        return "Loan application successful for loan ID: " + savedLoan.getId();
     }
 
     // Get all loans for an account
-    public List<Loan> getLoansByAccountNumber(String accountNumber) {
+    public List<Loan> getLoanDetails(String accountNumber) {
         return loanRepository.findByAccountNumber(accountNumber);
     }
 
@@ -32,11 +30,30 @@ public class LoanService {
         return loanRepository.findByAccountNumberAndStatus(accountNumber, "ACTIVE");
     }
 
-    public List<Loan> getLoanDetails(String accountNumber) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    // Repay loan amount
+    public String repayLoan(String accountNumber, double amount) {
+        Optional<Loan> optionalLoan = Optional.ofNullable(getActiveLoanByAccountNumber(accountNumber));
+        
+        if (optionalLoan.isPresent()) {
+            Loan loan = optionalLoan.get();
+            double remainingBalance = loan.getRemainingBalance();
+
+            if (amount >= remainingBalance) {
+                loan.setRemainingBalance(0.0);
+                loan.setStatus("CLOSED"); // Loan closed after repayment
+            } else {
+                loan.setRemainingBalance(remainingBalance - amount);
+            }
+
+            loanRepository.save(loan);
+            return "Repayment successful. Remaining balance: " + loan.getRemainingBalance();
+        } else {
+            return "No active loan found for account number: " + accountNumber;
+        }
     }
 
-    public String repayLoan(String accountNumber, double amount) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Loan saveLoan(Loan loan) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'saveLoan'");
     }
 }

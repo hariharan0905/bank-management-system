@@ -20,12 +20,13 @@ public class CardController {
         return debitCard != null ? ResponseEntity.ok(debitCard) : ResponseEntity.notFound().build();
     }
 
-  /*   // Add a new debit card
+    /*  // Add a new debit card
     @PostMapping("/add")
     public ResponseEntity<?> addCard(@RequestBody DebitCard debitCard) {
         DebitCard savedCard = debitCardService.addDebitCard(debitCard);
         return ResponseEntity.ok(savedCard);
-    }*/
+    } 
+    */
 
     // Delete debit card
     @DeleteMapping("/{accountNumber}")

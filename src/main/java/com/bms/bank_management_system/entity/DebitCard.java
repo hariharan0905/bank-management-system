@@ -16,7 +16,23 @@ import lombok.AllArgsConstructor;
 public class DebitCard {
     @Id
     private String accountNumber;
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
     private String cardNumber;
+
+    public String getCardNumber() {
+        return cardNumber;
+    }
     private String expiryDate;
+
+    public String getExpiryDate() {
+        return expiryDate;
+    }
+
+    public void setExpiryDate(String expiryDate) {
+        this.expiryDate = expiryDate;
+    }
 
 }

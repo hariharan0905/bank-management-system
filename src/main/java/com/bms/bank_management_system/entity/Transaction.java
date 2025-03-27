@@ -48,4 +48,8 @@ public class Transaction {
     @Column(name = "transaction_date", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date transactionDate;
+
+    public Date getTransactionDate() {
+        return transactionDate;
+    }
 }
