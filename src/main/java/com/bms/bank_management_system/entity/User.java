@@ -1,52 +1,43 @@
 package com.bms.bank_management_system.entity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.persistence.*;
+import java.util.List;
+
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 @NoArgsConstructor
-@Table(name = "users") 
+@Table(name = "users")
 public class User {
-    
+
     @Id
     @Column(name = "account_number", length = 20, nullable = false, unique = true)
     private String accountNumber;
 
-    @Column(name = "pin", length = 10, nullable = false) 
+    @Column(name = "pin", length = 100, nullable = false)  // store encoded pin (password)
     private String pin;
 
-    @Column(name = "cvv", length = 5, nullable = false) 
+    @Column(name = "cvv", length = 5, nullable = false)
     private String cvv;
 
-    public String getPin() {
-        return pin;
-    }
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "account_number"))
+    private List<String> roles;
 
-    public void setPin(String pin) {
-        this.pin = pin;
-    }
-
-    public String getAccountNumber() {
+    // 👇 Required for Spring Security JWT
+    public String getUsername() {
         return accountNumber;
     }
 
-    public void setAccountNumber(String accountNumber) {
-        this.accountNumber = accountNumber;
+    public String getPassword() {
+        return pin;
     }
 
-    public String getCvv() {
-        return cvv;
+    public List<String> getRoles() {
+        return roles;
     }
-
-    public void setCvv(String cvv) {
-        this.cvv = cvv;
-    }
-
 }

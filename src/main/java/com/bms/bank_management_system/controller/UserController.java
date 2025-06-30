@@ -1,15 +1,11 @@
 package com.bms.bank_management_system.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.bms.bank_management_system.entity.User;
 import com.bms.bank_management_system.payload.LoginRequest;
 import com.bms.bank_management_system.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/users")
@@ -18,17 +14,25 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    // User signup
+    // ✅ Signup
     @PostMapping("/signup")
     public ResponseEntity<String> signup(@RequestBody User user) {
-        userService.signup(user);
-        return ResponseEntity.ok("User registered successfully!");
+        try {
+            userService.signup(user);
+            return ResponseEntity.ok("User registered successfully!");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Signup failed: " + e.getMessage());
+        }
     }
 
-    // User login
+    // ✅ Login - returns JWT token
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        String token = userService.login(loginRequest.getAccountNumber(), loginRequest.getPin());
-        return token != null ? ResponseEntity.ok(token) : ResponseEntity.status(401).body("Invalid credentials!");
+        try {
+            String token = userService.login(loginRequest.getAccountNumber(), loginRequest.getPin());
+            return ResponseEntity.ok().body("{\"token\": \"" + token + "\"}");
+        } catch (Exception e) {
+            return ResponseEntity.status(401).body("Invalid account number or PIN");
+        }
     }
 }

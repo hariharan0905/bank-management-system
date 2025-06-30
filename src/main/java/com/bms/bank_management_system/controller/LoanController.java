@@ -16,27 +16,53 @@ public class LoanController {
     @Autowired
     private LoanService loanService;
 
-    // Apply for a loan - Restricted to users with 'USER' role
+    /**
+     * Apply for a loan.
+     * Accessible only by users with 'USER' role.
+     */
     @PostMapping("/apply")
-    @PreAuthorize("hasAuthority('USER')")  // Ensure you enable @EnableGlobalMethodSecurity(prePostEnabled = true) in SecurityConfig
+    @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<?> applyLoan(@RequestBody Loan loan) {
-        Loan savedLoan = loanService.saveLoan(loan);
-        return ResponseEntity.ok("Loan application successful for loan ID: " + savedLoan.getId());
+        try {
+            Loan savedLoan = loanService.saveLoan(loan);
+            return ResponseEntity.ok("Loan application successful for loan ID: " + savedLoan.getId());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Loan application failed: " + e.getMessage());
+        }
     }
 
-    // Get loan details by account number
-    @GetMapping("/{accountNumber}")
-    @PreAuthorize("hasAuthority('USER')")  // Restrict access to 'USER' only
-    public ResponseEntity<List<Loan>> getLoanDetails(@PathVariable String accountNumber) {
-        List<Loan> loans = loanService.getLoanDetails(accountNumber);
-        return loans.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(loans);
-    }
-
-    // Repay loan amount
+    /**
+     * Repay a loan amount by account number.
+     */
     @PostMapping("/repay")
-    @PreAuthorize("hasAuthority('USER')")  // Restricted to 'USER' role
+    @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<?> repayLoan(@RequestParam String accountNumber, @RequestParam double amount) {
-        String result = loanService.repayLoan(accountNumber, amount);
-        return ResponseEntity.ok(result);
+        try {
+            String result = loanService.repayLoan(accountNumber, amount);
+            return ResponseEntity.ok(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Loan repayment failed: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Get loan details by account number.
+     */
+    @GetMapping("/{accountNumber}")
+    @PreAuthorize("hasAuthority('USER')")
+    public ResponseEntity<?> getLoanDetails(@PathVariable String accountNumber) {
+        try {
+            List<Loan> loans = loanService.getLoanDetails(accountNumber);
+            if (loans.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            } else {
+                return ResponseEntity.ok(loans);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Error fetching loan details: " + e.getMessage());
+        }
     }
 }

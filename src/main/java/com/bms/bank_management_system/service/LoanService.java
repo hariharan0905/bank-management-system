@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class LoanService {
@@ -14,33 +13,31 @@ public class LoanService {
     @Autowired
     private LoanRepository loanRepository;
 
-    // Apply for a loan
-    public String applyLoan(Loan loan) {
-        Loan savedLoan = loanRepository.save(loan);
-        return "Loan application successful for loan ID: " + savedLoan.getId();
+    // Save loan (used by controller)
+    public Loan saveLoan(Loan loan) {
+        return loanRepository.save(loan);
     }
 
-    // Get all loans for an account
+    // Get all loans for a specific account number
     public List<Loan> getLoanDetails(String accountNumber) {
         return loanRepository.findByAccountNumber(accountNumber);
     }
 
-    // Get active loan for an account
+    // Get the currently active loan for a given account
     public Loan getActiveLoanByAccountNumber(String accountNumber) {
         return loanRepository.findByAccountNumberAndStatus(accountNumber, "ACTIVE");
     }
 
-    // Repay loan amount
+    // Repay logic
     public String repayLoan(String accountNumber, double amount) {
-        Optional<Loan> optionalLoan = Optional.ofNullable(getActiveLoanByAccountNumber(accountNumber));
-        
-        if (optionalLoan.isPresent()) {
-            Loan loan = optionalLoan.get();
+        Loan loan = getActiveLoanByAccountNumber(accountNumber);
+
+        if (loan != null) {
             double remainingBalance = loan.getRemainingBalance();
 
             if (amount >= remainingBalance) {
                 loan.setRemainingBalance(0.0);
-                loan.setStatus("CLOSED"); // Loan closed after repayment
+                loan.setStatus("CLOSED");
             } else {
                 loan.setRemainingBalance(remainingBalance - amount);
             }
@@ -50,10 +47,5 @@ public class LoanService {
         } else {
             return "No active loan found for account number: " + accountNumber;
         }
-    }
-
-    public Loan saveLoan(Loan loan) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'saveLoan'");
     }
 }
