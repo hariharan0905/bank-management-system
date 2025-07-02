@@ -16,10 +16,6 @@ public class LoanController {
     @Autowired
     private LoanService loanService;
 
-    /**
-     * Apply for a loan.
-     * Accessible only by users with 'USER' role.
-     */
     @PostMapping("/apply")
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<?> applyLoan(@RequestBody Loan loan) {
